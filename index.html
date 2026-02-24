@@ -1,0 +1,1078 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Analog Production Services</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --black: #0a0a0a;
+    --white: #fafafa;
+    --mid: #6b6b6b;
+    --accent: #ff3c00;
+    --border: #d8d8d8;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--white);
+    color: var(--black);
+    font-family: 'DM Sans', sans-serif;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  .cursor {
+    width: 10px;
+    height: 10px;
+    background: var(--black);
+    border-radius: 50%;
+    position: fixed;
+    top: 0; left: 0;
+    pointer-events: none;
+    z-index: 9999;
+    transition: transform 0.15s ease, background 0.2s ease;
+    transform: translate(-50%, -50%);
+  }
+  .cursor.grow {
+    transform: translate(-50%, -50%) scale(5);
+    background: var(--accent);
+    mix-blend-mode: multiply;
+  }
+  .cursor-ring {
+    width: 36px;
+    height: 36px;
+    border: 1px solid var(--black);
+    border-radius: 50%;
+    position: fixed;
+    top: 0; left: 0;
+    pointer-events: none;
+    z-index: 9998;
+    transform: translate(-50%, -50%);
+  }
+
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px 40px;
+    background: rgba(250,250,250,0.92);
+    backdrop-filter: blur(8px);
+    border-bottom: 1px solid transparent;
+    transition: border-color 0.3s;
+  }
+  nav.scrolled { border-color: var(--border); }
+
+  .nav-logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 0.12em;
+    color: var(--black);
+    text-decoration: none;
+  }
+  .nav-logo span { color: var(--accent); }
+
+  .nav-links {
+    display: flex;
+    gap: 40px;
+    list-style: none;
+  }
+  .nav-links a {
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--black);
+    text-decoration: none;
+    position: relative;
+  }
+  .nav-links a::after {
+    content: '';
+    position: absolute;
+    bottom: -2px; left: 0;
+    width: 0; height: 1px;
+    background: var(--accent);
+    transition: width 0.3s ease;
+  }
+  .nav-links a:hover::after { width: 100%; }
+
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 0 40px 60px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-eyebrow {
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--mid);
+    margin-bottom: 24px;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeUp 0.8s forwards 0.2s;
+  }
+
+  .hero-headline {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(80px, 14vw, 200px);
+    line-height: 0.92;
+    letter-spacing: -0.01em;
+    color: var(--black);
+  }
+  .hero-headline .line {
+    display: block;
+    overflow: hidden;
+  }
+  .hero-headline .line span {
+    display: block;
+    transform: translateY(110%);
+    animation: slideUp 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  }
+  .hero-headline .line:nth-child(1) span { animation-delay: 0.3s; }
+  .hero-headline .line:nth-child(2) span { animation-delay: 0.45s; }
+  .hero-headline .line:nth-child(3) span { animation-delay: 0.6s; }
+  .hero-headline .accent { color: var(--accent); }
+
+  .hero-sub {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-top: 40px;
+    opacity: 0;
+    animation: fadeUp 0.8s forwards 1s;
+  }
+  .hero-sub p {
+    max-width: 340px;
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--mid);
+    font-weight: 300;
+  }
+  .hero-line {
+    position: absolute;
+    right: 40px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 1px;
+    height: 0;
+    background: var(--border);
+    animation: growLine 1.2s forwards 0.8s;
+  }
+  .hero-counter {
+    position: absolute;
+    right: 52px;
+    top: 50%;
+    transform: translateY(-50%) rotate(90deg);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--mid);
+    opacity: 0;
+    animation: fadeUp 0.5s forwards 1.5s;
+    white-space: nowrap;
+  }
+
+  .marquee-wrap {
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    overflow: hidden;
+    padding: 18px 0;
+    background: var(--black);
+  }
+  .marquee-track {
+    display: flex;
+    animation: marquee 22s linear infinite;
+    width: max-content;
+  }
+  .marquee-item {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 26px;
+    letter-spacing: 0.08em;
+    color: var(--white);
+    padding: 0 48px;
+    white-space: nowrap;
+  }
+  .marquee-dot {
+    color: var(--accent);
+    font-size: 32px;
+    line-height: 1;
+    align-self: center;
+  }
+
+  section { padding: 120px 40px; }
+
+  .section-label {
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--mid);
+    margin-bottom: 60px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .section-label::before {
+    content: '';
+    width: 32px;
+    height: 1px;
+    background: var(--accent);
+  }
+
+  .about {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: start;
+    border-top: 1px solid var(--border);
+  }
+  .about-headline {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(48px, 6vw, 88px);
+    line-height: 0.95;
+    letter-spacing: 0.01em;
+  }
+  .about-right { padding-top: 80px; }
+  .about-body {
+    font-size: 17px;
+    line-height: 1.75;
+    font-weight: 300;
+    color: #2a2a2a;
+    margin-bottom: 40px;
+  }
+  .about-body strong { font-weight: 500; color: var(--black); }
+
+  .stat-row {
+    display: flex;
+    gap: 48px;
+    border-top: 1px solid var(--border);
+    padding-top: 40px;
+    margin-top: 40px;
+  }
+  .stat-number {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 56px;
+    line-height: 1;
+    letter-spacing: 0.02em;
+  }
+  .stat-number span { color: var(--accent); }
+  .stat-label {
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--mid);
+    margin-top: 6px;
+  }
+
+  /* SERVICE BANNER */
+  .service-banner {
+    background: var(--black);
+    position: relative;
+    overflow: hidden;
+    padding: 80px 40px;
+  }
+  .service-banner-inner {
+    display: flex;
+    align-items: center;
+    gap: 80px;
+    position: relative;
+    z-index: 2;
+  }
+  .service-banner-left { flex-shrink: 0; }
+  .service-banner-label {
+    font-size: 10px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.35);
+    display: block;
+    margin-bottom: 12px;
+  }
+  .service-banner-counter {
+    display: flex;
+    align-items: flex-start;
+    line-height: 1;
+  }
+  .counter-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(120px, 18vw, 240px);
+    color: var(--white);
+    line-height: 0.85;
+    letter-spacing: -0.02em;
+    display: inline-block;
+    min-width: 2ch;
+  }
+  .counter-pct {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(48px, 6vw, 88px);
+    color: var(--accent);
+    margin-top: 12px;
+    line-height: 1;
+  }
+  .service-banner-right {
+    border-left: 1px solid rgba(255,255,255,0.1);
+    padding-left: 80px;
+  }
+  .service-banner-statement {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(56px, 8vw, 120px);
+    line-height: 0.9;
+    letter-spacing: 0.02em;
+    color: var(--white);
+    margin-bottom: 32px;
+  }
+  .service-banner-sub {
+    font-size: 15px;
+    line-height: 1.75;
+    color: rgba(255,255,255,0.45);
+    font-weight: 300;
+    max-width: 380px;
+  }
+  .service-banner-bg-text {
+    position: absolute;
+    right: -20px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(180px, 28vw, 420px);
+    color: rgba(255,255,255,0.03);
+    letter-spacing: 0.06em;
+    pointer-events: none;
+    user-select: none;
+    white-space: nowrap;
+    line-height: 1;
+  }
+
+  .services { border-top: 1px solid var(--border); }
+  .services-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .service-card {
+    border: 1px solid var(--border);
+    padding: 48px 40px;
+    position: relative;
+    overflow: hidden;
+    transition: background 0.4s ease;
+    cursor: none;
+  }
+  .service-card:hover { background: var(--black); }
+  .service-card:hover .service-title,
+  .service-card:hover .service-body { color: var(--white); }
+  .service-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 13px;
+    letter-spacing: 0.14em;
+    color: var(--accent);
+    margin-bottom: 32px;
+    display: block;
+  }
+  .service-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 42px;
+    line-height: 0.95;
+    letter-spacing: 0.02em;
+    margin-bottom: 20px;
+    transition: color 0.4s;
+  }
+  .service-body {
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--mid);
+    font-weight: 300;
+    transition: color 0.4s;
+  }
+  .service-arrow {
+    position: absolute;
+    bottom: 40px; right: 40px;
+    font-size: 28px;
+    color: var(--accent);
+    transition: transform 0.3s ease;
+    line-height: 1;
+  }
+  .service-card:hover .service-arrow { transform: translate(4px, -4px); }
+
+  .process { border-top: 1px solid var(--border); }
+  .process-item {
+    display: grid;
+    grid-template-columns: 80px 1fr 1fr;
+    gap: 40px;
+    align-items: start;
+    padding: 48px 0;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+  }
+  .process-item::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0;
+    width: 0; height: 1px;
+    background: var(--accent);
+    transition: width 0.6s ease;
+  }
+  .process-item:hover::after { width: 100%; }
+  .process-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 64px;
+    line-height: 0.85;
+    color: var(--border);
+    letter-spacing: -0.02em;
+  }
+  .process-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 36px;
+    letter-spacing: 0.02em;
+    line-height: 1;
+    align-self: center;
+  }
+  .process-body {
+    font-size: 14px;
+    line-height: 1.75;
+    color: var(--mid);
+    font-weight: 300;
+    align-self: center;
+  }
+
+  .cta {
+    background: var(--black);
+    color: var(--white);
+    text-align: center;
+    padding: 160px 40px;
+    position: relative;
+    overflow: hidden;
+  }
+  .cta::before {
+    content: 'TORONTO';
+    position: absolute;
+    bottom: -20px; left: 50%;
+    transform: translateX(-50%);
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(120px, 22vw, 320px);
+    color: rgba(255,255,255,0.04);
+    white-space: nowrap;
+    letter-spacing: 0.04em;
+    pointer-events: none;
+    user-select: none;
+  }
+  .cta-label {
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.4);
+    margin-bottom: 48px;
+  }
+  .cta-headline {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(64px, 10vw, 144px);
+    line-height: 0.9;
+    letter-spacing: 0.01em;
+    color: var(--white);
+    margin-bottom: 64px;
+  }
+  .cta-headline em { font-style: normal; color: var(--accent); }
+
+  .email-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 16px;
+    border: 1px solid rgba(255,255,255,0.2);
+    padding: 22px 40px;
+    font-size: 15px;
+    letter-spacing: 0.06em;
+    color: var(--white);
+    background: none;
+    position: relative;
+    overflow: hidden;
+    cursor: none;
+    transition: border-color 0.3s;
+    font-weight: 300;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .email-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--accent);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 0;
+  }
+  .email-btn:hover::before { transform: scaleX(1); }
+  .email-btn:hover { border-color: var(--accent); }
+  .email-btn span { position: relative; z-index: 1; }
+  .email-btn .copy-icon {
+    position: relative; z-index: 1;
+    font-size: 18px;
+    transition: transform 0.3s;
+  }
+  .email-btn:hover .copy-icon { transform: rotate(10deg) scale(1.1); }
+
+  .copy-toast {
+    position: fixed;
+    bottom: 40px; left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--black);
+    color: var(--white);
+    padding: 14px 28px;
+    font-size: 13px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    border-left: 3px solid var(--accent);
+    opacity: 0;
+    transition: opacity 0.3s, transform 0.3s;
+    pointer-events: none;
+    z-index: 999;
+  }
+  .copy-toast.show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+
+  footer {
+    padding: 48px 40px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .footer-logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px;
+    letter-spacing: 0.12em;
+    color: var(--black);
+  }
+  .footer-logo span { color: var(--accent); }
+  .footer-copy { font-size: 12px; color: var(--mid); letter-spacing: 0.06em; }
+  .footer-location { font-size: 12px; color: var(--mid); letter-spacing: 0.1em; text-transform: uppercase; }
+
+  .reveal {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+  .reveal-delay-1 { transition-delay: 0.1s; }
+  .reveal-delay-2 { transition-delay: 0.2s; }
+  .reveal-delay-3 { transition-delay: 0.3s; }
+  .reveal-delay-4 { transition-delay: 0.4s; }
+
+  @keyframes fadeUp {
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes slideUp {
+    to { transform: translateY(0); }
+  }
+  @keyframes growLine {
+    to { height: 200px; }
+  }
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+
+  @media (max-width: 900px) {
+    nav { padding: 20px 24px; }
+    .nav-links { display: none; }
+    .hero { padding: 0 24px 48px; }
+    section { padding: 80px 24px; }
+    .about { grid-template-columns: 1fr; gap: 40px; }
+    .about-right { padding-top: 0; }
+    .services-grid { grid-template-columns: 1fr; }
+    .process-item { grid-template-columns: 60px 1fr; }
+    .process-body { grid-column: 2; }
+    footer { flex-direction: column; gap: 16px; text-align: center; }
+    .hero-sub { flex-direction: column; gap: 24px; align-items: flex-start; }
+    .service-banner { padding: 60px 24px; }
+    .service-banner-inner { flex-direction: column; gap: 40px; }
+    .service-banner-right { border-left: none; border-top: 1px solid rgba(255,255,255,0.1); padding-left: 0; padding-top: 40px; }
+  }
+  /* LOADER */
+  #loader {
+    position: fixed;
+    inset: 0;
+    z-index: 10000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: var(--black);
+    transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  #loader.hide {
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-12px);
+  }
+  .loader-bg {
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      rgba(255,255,255,0.015) 0px,
+      rgba(255,255,255,0.015) 1px,
+      transparent 1px,
+      transparent 60px
+    );
+    pointer-events: none;
+  }
+  .loader-content {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    width: 100%;
+    max-width: 600px;
+    padding: 0 40px;
+  }
+  .loader-logo {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(64px, 12vw, 140px);
+    letter-spacing: 0.1em;
+    color: var(--white);
+    line-height: 1;
+    margin-bottom: 48px;
+    overflow: hidden;
+  }
+  .loader-logo span { color: var(--accent); }
+  .loader-bar-wrap {
+    width: 100%;
+    height: 1px;
+    background: rgba(255,255,255,0.1);
+    position: relative;
+    margin-bottom: 20px;
+  }
+  .loader-bar {
+    position: absolute;
+    left: 0; top: 0;
+    height: 100%;
+    width: 0%;
+    background: var(--accent);
+    transition: width 0.1s linear;
+  }
+  .loader-pct {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 13px;
+    letter-spacing: 0.2em;
+    color: rgba(255,255,255,0.3);
+    text-align: right;
+  }
+  .loader-tagline {
+    position: absolute;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 10px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.2);
+    white-space: nowrap;
+  }
+
+  body.loading { overflow: hidden; }
+
+</style>
+</head>
+<body>
+
+<div id="loader">
+  <div class="loader-bg"></div>
+  <div class="loader-content">
+    <div class="loader-logo">ANALOG<span>.</span></div>
+    <div class="loader-bar-wrap"><div class="loader-bar" id="loaderBar"></div></div>
+    <div class="loader-pct" id="loaderPct">0</div>
+  </div>
+  <div class="loader-tagline" id="loaderTagline">Production Services</div>
+</div>
+<div class="cursor-ring" id="cursorRing"></div>
+<div class="copy-toast" id="copyToast">Email copied to clipboard</div>
+
+<nav id="mainNav">
+  <a href="#" class="nav-logo">Analog<span>.</span></a>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#services">Services</a></li>
+    <li><a href="#process">Process</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<section class="hero">
+  <div class="hero-line"></div>
+  <div class="hero-counter">Toronto &amp; GTA</div>
+  <p class="hero-eyebrow" id="heroEyebrow">Production Services &mdash; Toronto &amp; Greater Toronto Area</p>
+  <h1 class="hero-headline">
+    <span class="line"><span>We Make</span></span>
+    <span class="line"><span>Productions</span></span>
+    <span class="line"><span class="accent">Happen.</span></span>
+  </h1>
+  <div class="hero-sub">
+    <p>Your trusted local partner for film, commercial, and content production in Toronto and the GTA. We handle the ground so you can focus on the vision.</p>
+  </div>
+</section>
+
+<div class="marquee-wrap">
+  <div class="marquee-track">
+    <span class="marquee-item">Location Scouting</span><span class="marquee-dot">&#8226;</span>
+    <span class="marquee-item">Crew Coordination</span><span class="marquee-dot">&#8226;</span>
+    <span class="marquee-item">Production Management</span><span class="marquee-dot">&#8226;</span>
+    <span class="marquee-item">Permitting &amp; Logistics</span><span class="marquee-dot">&#8226;</span>
+    <span class="marquee-item">Budget Management</span><span class="marquee-dot">&#8226;</span>
+    <span class="marquee-item">Vendor Relations</span><span class="marquee-dot">&#8226;</span>
+    <span class="marquee-item">Toronto GTA</span><span class="marquee-dot">&#8226;</span>
+    <span class="marquee-item">Location Scouting</span><span class="marquee-dot">&#8226;</span>
+    <span class="marquee-item">Crew Coordination</span><span class="marquee-dot">&#8226;</span>
+    <span class="marquee-item">Production Management</span><span class="marquee-dot">&#8226;</span>
+    <span class="marquee-item">Permitting &amp; Logistics</span><span class="marquee-dot">&#8226;</span>
+    <span class="marquee-item">Budget Management</span><span class="marquee-dot">&#8226;</span>
+    <span class="marquee-item">Vendor Relations</span><span class="marquee-dot">&#8226;</span>
+    <span class="marquee-item">Toronto GTA</span><span class="marquee-dot">&#8226;</span>
+  </div>
+</div>
+
+<section class="about" id="about">
+  <div class="about-left reveal">
+    <div class="section-label">Who We Are</div>
+    <h2 class="about-headline">Your Boots<br>on the<br>Ground.</h2>
+  </div>
+  <div class="about-right">
+    <p class="about-body reveal reveal-delay-1">
+      Analog Production Services exists to bridge the gap between <strong>out-of-town executive producers</strong> and the complex, fast-moving landscape of production in Toronto and the GTA.
+    </p>
+    <p class="about-body reveal reveal-delay-2">
+      We embed ourselves in your project from day one. Our deep local knowledge, established vendor relationships, and hands-on approach means your production runs lean, on schedule, and on budget without you needing to be in the room.
+    </p>
+  </div>
+</section>
+
+<div class="service-banner reveal">
+  <div class="service-banner-inner">
+    <div class="service-banner-left">
+      <span class="service-banner-label">Our Commitment</span>
+      <div class="service-banner-counter">
+        <span class="counter-num" id="serviceCounter">0</span><span class="counter-pct">%</span>
+      </div>
+    </div>
+    <div class="service-banner-right">
+      <p class="service-banner-statement">Service.<br>Focused.</p>
+      <p class="service-banner-sub">Every decision we make is in service of your production. No ego, no agenda. Just results.</p>
+    </div>
+  </div>
+  <div class="service-banner-bg-text" aria-hidden="true">SERVICE</div>
+</div>
+
+<section class="services" id="services">
+  <div class="section-label reveal">What We Do</div>
+  <div class="services-grid">
+    <div class="service-card reveal">
+      <span class="service-num">01</span>
+      <h3 class="service-title">Production<br>Management</h3>
+      <p class="service-body">End-to-end project management from pre-production through wrap. Schedules, call sheets, crew hiring, and daily execution handled with precision.</p>
+      <span class="service-arrow">&#8599;</span>
+    </div>
+    <div class="service-card reveal reveal-delay-1">
+      <span class="service-num">02</span>
+      <h3 class="service-title">Location<br>Services</h3>
+      <p class="service-body">Extensive knowledge of Toronto's neighbourhoods, studio facilities, and GTA locations. Permitting, scouts, and negotiations covered.</p>
+      <span class="service-arrow">&#8599;</span>
+    </div>
+    <div class="service-card reveal reveal-delay-2">
+      <span class="service-num">03</span>
+      <h3 class="service-title">Crew &amp;<br>Vendors</h3>
+      <p class="service-body">Access to our curated network of local crew, equipment houses, and trusted vendors. The right people, at the right price, every time.</p>
+      <span class="service-arrow">&#8599;</span>
+    </div>
+    <div class="service-card reveal">
+      <span class="service-num">04</span>
+      <h3 class="service-title">Budget<br>Control</h3>
+      <p class="service-body">Transparent cost management and reporting. We protect your budget with the same care we'd give our own, with zero surprises.</p>
+      <span class="service-arrow">&#8599;</span>
+    </div>
+    <div class="service-card reveal reveal-delay-1">
+      <span class="service-num">05</span>
+      <h3 class="service-title">Logistics &amp;<br>Permits</h3>
+      <p class="service-body">City permits, location agreements, insurance, and all the paperwork that keeps a production legal, safe, and moving forward without friction.</p>
+      <span class="service-arrow">&#8599;</span>
+    </div>
+    <div class="service-card reveal reveal-delay-2">
+      <span class="service-num">06</span>
+      <h3 class="service-title">EP<br>Support</h3>
+      <p class="service-body">We serve as your local EP liaison. Real-time communication, daily updates, and on-the-ground representation so you stay in control from anywhere.</p>
+      <span class="service-arrow">&#8599;</span>
+    </div>
+  </div>
+</section>
+
+<section class="process" id="process">
+  <div class="section-label reveal">How It Works</div>
+  <div class="process-list">
+    <div class="process-item reveal">
+      <div class="process-num">01</div>
+      <div class="process-title">Brief &amp;<br>Intake</div>
+      <div class="process-body">You share the project details, timeline, and objectives. We ask the right questions to understand exactly what success looks like for your production.</div>
+    </div>
+    <div class="process-item reveal reveal-delay-1">
+      <div class="process-num">02</div>
+      <div class="process-title">Plan &amp;<br>Quote</div>
+      <div class="process-body">We build a realistic production plan, source local crew and vendors, and deliver a clear, honest budget with zero hidden costs.</div>
+    </div>
+    <div class="process-item reveal reveal-delay-2">
+      <div class="process-num">03</div>
+      <div class="process-title">Execute</div>
+      <div class="process-body">We run the production on the ground. From first prep day to final wrap, every detail is managed so you can focus on creative decisions.</div>
+    </div>
+    <div class="process-item reveal reveal-delay-3">
+      <div class="process-num">04</div>
+      <div class="process-title">Report &amp;<br>Wrap</div>
+      <div class="process-body">Clean cost reporting, final reconciliation, and a full wrap package. We close out every job the way we start it: organized and accountable.</div>
+    </div>
+  </div>
+</section>
+
+<section class="cta" id="contact">
+  <div class="cta-label reveal">Let's Work Together</div>
+  <h2 class="cta-headline reveal reveal-delay-1">
+    Bringing Your<br>Production to<br><em>Toronto.</em>
+  </h2>
+  <button class="email-btn reveal reveal-delay-2" onclick="copyEmail()">
+    <span id="emailText"></span>
+    <span class="copy-icon">&#9697;</span>
+  </button>
+</section>
+
+<footer>
+  <div class="footer-logo">Analog<span>.</span></div>
+  <div class="footer-copy">&copy; <span id="copyrightYear"></span> Analog Production Services</div>
+  <div class="footer-location">Toronto &bull; GTA &bull; Canada</div>
+</footer>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+
+  // Loader
+  document.body.classList.add('loading');
+  var loader = document.getElementById('loader');
+  var loaderBar = document.getElementById('loaderBar');
+  var loaderPct = document.getElementById('loaderPct');
+  var pct = 0;
+  var loaderDone = false;
+
+  function runLoader() {
+    // Fast to 80, then slow, then snap to 100
+    var phases = [
+      { target: 30, duration: 300 },
+      { target: 60, duration: 350 },
+      { target: 80, duration: 400 },
+      { target: 92, duration: 500 },
+      { target: 100, duration: 300 }
+    ];
+    var phaseIndex = 0;
+    var current = 0;
+
+    function runPhase() {
+      if (phaseIndex >= phases.length) {
+        finishLoader();
+        return;
+      }
+      var phase = phases[phaseIndex];
+      var startVal = current;
+      var endVal = phase.target;
+      var startTime = null;
+
+      function tick(ts) {
+        if (!startTime) startTime = ts;
+        var progress = Math.min((ts - startTime) / phase.duration, 1);
+        var eased = progress < 0.5 ? 2 * progress * progress : 1 - Math.pow(-2 * progress + 2, 2) / 2;
+        current = Math.floor(startVal + (endVal - startVal) * eased);
+        loaderBar.style.width = current + '%';
+        loaderPct.textContent = current;
+        if (progress < 1) {
+          requestAnimationFrame(tick);
+        } else {
+          phaseIndex++;
+          setTimeout(runPhase, phaseIndex === phases.length - 1 ? 80 : 40);
+        }
+      }
+      requestAnimationFrame(tick);
+    }
+    runPhase();
+  }
+
+  function finishLoader() {
+    if (loaderDone) return;
+    loaderDone = true;
+    loaderBar.style.width = '100%';
+    loaderPct.textContent = '100';
+    setTimeout(function() {
+      loader.classList.add('hide');
+      document.body.classList.remove('loading');
+      setTimeout(function() {
+        loader.style.display = 'none';
+      }, 800);
+    }, 320);
+  }
+
+  runLoader();
+  // Failsafe: always finish within 3s
+  setTimeout(finishLoader, 3000);
+
+  // Dynamic copyright year
+  document.getElementById('copyrightYear').textContent = new Date().getFullYear();
+
+  // Build email in JS so Cloudflare obfuscation never triggers
+  var _e = ['hello', 'analogproductionservices.com'].join('@');
+  document.getElementById('emailText').textContent = _e;
+
+  // Custom cursor
+  var cursor = document.getElementById('cursor');
+  var ring = document.getElementById('cursorRing');
+  var rx = window.innerWidth / 2, ry = window.innerHeight / 2;
+  var mx = rx, my = ry;
+
+  document.addEventListener('mousemove', function(e) {
+    mx = e.clientX;
+    my = e.clientY;
+    cursor.style.left = mx + 'px';
+    cursor.style.top = my + 'px';
+  });
+
+  function lerp(a, b, t) { return a + (b - a) * t; }
+
+  function animRing() {
+    rx = lerp(rx, mx, 0.12);
+    ry = lerp(ry, my, 0.12);
+    ring.style.left = rx + 'px';
+    ring.style.top = ry + 'px';
+    requestAnimationFrame(animRing);
+  }
+  animRing();
+
+  document.querySelectorAll('a, button, .service-card, .process-item').forEach(function(el) {
+    el.addEventListener('mouseenter', function() { cursor.classList.add('grow'); });
+    el.addEventListener('mouseleave', function() { cursor.classList.remove('grow'); });
+  });
+
+  // Nav scroll
+  window.addEventListener('scroll', function() {
+    document.getElementById('mainNav').classList.toggle('scrolled', window.scrollY > 40);
+  });
+
+  // Scroll reveal via IntersectionObserver
+  var revealEls = document.querySelectorAll('.reveal');
+  var observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.05 });
+
+  revealEls.forEach(function(el) { observer.observe(el); });
+
+  // Animate counter when banner enters viewport
+  var counterEl = document.getElementById("serviceCounter");
+  var counterDone = false;
+  var counterObserver = new IntersectionObserver(function(entries) {
+    if (entries[0].isIntersecting && !counterDone) {
+      counterDone = true;
+      var start = 0;
+      var end = 100;
+      var duration = 1800;
+      var startTime = null;
+      function ease(t) { return t < 0.5 ? 4*t*t*t : 1 - Math.pow(-2*t+2,3)/2; }
+      function tick(ts) {
+        if (!startTime) startTime = ts;
+        var progress = Math.min((ts - startTime) / duration, 1);
+        counterEl.textContent = Math.floor(ease(progress) * end);
+        if (progress < 1) requestAnimationFrame(tick);
+        else counterEl.textContent = end;
+      }
+      requestAnimationFrame(tick);
+      counterObserver.unobserve(entries[0].target);
+    }
+  }, { threshold: 0.3 });
+  if (counterEl) counterObserver.observe(document.querySelector(".service-banner"));
+
+  // Text scramble utility
+  function scrambleText(el, finalText, duration) {
+    var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@.';
+    var startTime = null;
+
+    function step(ts) {
+      if (!startTime) startTime = ts;
+      var progress = Math.min((ts - startTime) / duration, 1);
+      var resolved = Math.floor(progress * finalText.length);
+      var display = '';
+      for (var i = 0; i < finalText.length; i++) {
+        display += i < resolved
+          ? finalText[i]
+          : chars[Math.floor(Math.random() * chars.length)];
+      }
+      el.textContent = display;
+      if (progress < 1) {
+        requestAnimationFrame(step);
+      } else {
+        el.textContent = finalText;
+      }
+    }
+    requestAnimationFrame(step);
+  }
+
+  // Hero eyebrow scramble on load
+  setTimeout(function() {
+    var eyebrow = document.getElementById('heroEyebrow');
+    if (eyebrow) {
+      var original = eyebrow.textContent.trim();
+      scrambleText(eyebrow, original, 1200);
+    }
+  }, 400);
+
+  // Copy email to clipboard
+  window.copyEmail = function() {
+    var email = ['hello', 'analogproductionservices.com'].join('@');
+    var emailEl = document.getElementById('emailText');
+    var toast = document.getElementById('copyToast');
+
+    function showToast() {
+      toast.classList.add('show');
+      setTimeout(function() { toast.classList.remove('show'); }, 2500);
+      scrambleText(emailEl, 'Copied!', 500);
+      setTimeout(function() { scrambleText(emailEl, email, 800); }, 2200);
+    }
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(email).then(showToast).catch(function() {
+        fallbackCopy(email);
+        showToast();
+      });
+    } else {
+      fallbackCopy(email);
+      showToast();
+    }
+  };
+
+  function fallbackCopy(text) {
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0;';
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); } catch(e) {}
+    document.body.removeChild(ta);
+  }
+
+});
+</script>
+</body>
+</html>
