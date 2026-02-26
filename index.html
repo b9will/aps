@@ -175,10 +175,15 @@ body.page-ready .hero-foot     { animation: fadeUp 0.7s cubic-bezier(0.16,1,0.3,
 body.page-ready .hero-headline .line:nth-child(1) span { animation: slideUp 1.1s cubic-bezier(0.16,1,0.3,1) forwards 0.3s; }
 body.page-ready .hero-headline .line:nth-child(2) span { animation: slideUp 1.1s cubic-bezier(0.16,1,0.3,1) forwards 0.42s; }
 /* Third line: independent block, no overflow clip, enters via opacity */
-.hero-headline .line-rot { display: block; opacity: 0; }
-body.page-ready .hero-headline .line-rot { animation: fadeIn 0.6s ease forwards 0.7s; }
-
-/* ── ROTATING WORD — Solari scramble ── */
+.hero-headline .line-rot { display: block; }
+/* Clip wrapper: overflow hidden + descender padding so g/q/y aren't cut */
+.line-rot-clip {
+  display: block;
+  overflow: hidden;
+  padding-bottom: 0.2em;
+  margin-bottom: -0.2em;
+}
+/* ── ROTATING WORD ── */
 .hero-rotating-word {
   display: block;
   font-family: 'Instrument Serif', serif;
@@ -186,12 +191,8 @@ body.page-ready .hero-headline .line-rot { animation: fadeIn 0.6s ease forwards 
   line-height: 0.95;
   letter-spacing: 0em;
   font-size: inherit;
-  padding-bottom: 0.15em;
-}
-.hero-rotating-word .rot-char {
-  display: inline-block;
   will-change: transform, opacity;
-  vertical-align: baseline;
+  opacity: 0; /* GSAP controls first reveal */
 }
 
 /* ── HERO ─────────────────────────────────── */
@@ -585,7 +586,7 @@ footer.visible .f-tagline { opacity: 1; transform: translateY(0); }
         <h1 class="hero-headline">
           <span class="line"><span>Canada,</span></span>
           <span class="line"><span>Without the</span></span>
-          <span class="line-rot"><span class="hero-rotating-word" id="rotatingWord">Friction.</span></span>
+          <span class="line-rot"><div class="line-rot-clip"><span class="hero-rotating-word" id="rotatingWord">Friction.</span></div></span>
         </h1>
       </div>
       <div class="hero-panel">
@@ -963,51 +964,38 @@ document.addEventListener('DOMContentLoaded', function() {
             if(ey) scramble(ey,ey.textContent.trim(),1100);
           },400);
         }
-        // Start word rotation after hero animates in
-        setTimeout(startWordRotation, 900);
+        // Start word rotation immediately with hero
+        startWordRotation();
       },200);
     },380);
   }
   setTimeout(finishLoader,4200);
 
-  /* ── ROTATING WORD — GSAP letter-by-letter ── */
+  /* ── ROTATING WORD — word-level GSAP slide ── */
   var rotWords=['Friction.','Headaches.','Overages.','Paperwork.','Variability.','Questions.'];
-  var rotIdx=0, rotRunning=false, rotInterval=null;
+  var rotIdx=0, rotRunning=false;
   var rotEl=document.getElementById('rotatingWord');
 
-  function buildChars(word) {
-    rotEl.innerHTML='';
-    word.split('').forEach(function(ch) {
-      var s=document.createElement('span'); s.className='rot-char';
-      s.textContent=ch==' '?'\u00a0':ch; rotEl.appendChild(s);
-    });
-    return rotEl.querySelectorAll('.rot-char');
-  }
+  function getH(){ return rotEl.offsetHeight||80; }
 
   function startWordRotation(){
-    // Wait for GSAP if not yet available
     if(typeof gsap==='undefined'){setTimeout(startWordRotation,100);return;}
     if(rotRunning) return; rotRunning=true;
-    // Set initial word, animate in immediately
-    var chars=buildChars(rotWords[0]);
-    gsap.fromTo(chars,{y:'110%',opacity:0},{y:'0%',opacity:1,duration:0.7,ease:'power3.out',stagger:0.04});
 
-    rotInterval=setInterval(function(){
-      var currentChars=rotEl.querySelectorAll('.rot-char');
-      var nextIdx=(rotIdx+1)%rotWords.length;
-      var nextWord=rotWords[nextIdx];
-      // Exit: stagger letters up and out
-      gsap.to(currentChars,{
-        y:'-110%', opacity:0, duration:0.45, ease:'power2.in', stagger:{each:0.03,from:'end'},
-        onComplete:function(){
-          var newChars=buildChars(nextWord);
-          // Set start position
-          gsap.set(newChars,{y:'110%',opacity:0});
-          // Enter: stagger from bottom
-          gsap.to(newChars,{y:'0%',opacity:1,duration:0.7,ease:'power3.out',stagger:0.04});
-          rotIdx=nextIdx;
-        }
-      });
+    // Slide first word in from below — timed to match headline line 3 (0.54s delay)
+    gsap.fromTo(rotEl,
+      {y: getH(), opacity:0},
+      {y:0, opacity:1, duration:0.8, ease:'power3.out', delay:0.54}
+    );
+
+    setInterval(function(){
+      var h=getH();
+      var next=rotWords[(++rotIdx)%rotWords.length];
+      // Slide current word out upward
+      gsap.to(rotEl,{y:-h, opacity:0, duration:0.5, ease:'power2.in', onComplete:function(){
+        rotEl.textContent=next;
+        gsap.fromTo(rotEl,{y:h,opacity:0},{y:0,opacity:1,duration:0.7,ease:'power3.out'});
+      }});
     },2800);
   }
 
